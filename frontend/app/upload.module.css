@@ -231,3 +231,86 @@
 .resumeButton:hover {
   background-color: #4338ca;
 }
+
+.uploadedFilesSection {
+  margin-top: 2rem;
+}
+
+.sectionTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.uploadedFilesGrid {
+  display: grid;
+  gap: 1rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.fileCard {
+  padding: 0.75rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  background-color: white;
+}
+
+.fileCardContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.fileCardInfo {
+  flex: 1;
+  text-align: left;
+  min-width: 0;
+}
+
+.fileCardTitle {
+  font-weight: 500;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fileCardDate {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+.fileCardActions {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.previewButton {
+  padding: 0.25rem 0.75rem;
+  background-color: #3b82f6;
+  color: white;
+  border-radius: 0.25rem;
+  transition: background-color 0.2s;
+}
+
+.previewButton:hover {
+  background-color: #2563eb;
+}
+
+.downloadButton {
+  padding: 0.25rem 0.75rem;
+  background-color: #10b981;
+  color: white;
+  border-radius: 0.25rem;
+  text-decoration: none;
+  transition: background-color 0.2s;
+}
+
+.downloadButton:hover {
+  background-color: #059669;
+}

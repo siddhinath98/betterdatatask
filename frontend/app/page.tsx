@@ -30,6 +30,9 @@ export default function Home() {
       }
     >
   >({});
+  const [activeUploads, setActiveUploads] = useState<Record<string, boolean>>(
+    {}
+  );
 
   //function to fetch files
   const fetchFiles = async () => {
@@ -45,8 +48,17 @@ export default function Home() {
 
   // Handle file selection
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newFiles = Array.from(e.target.files || []) as File[];
-    setFiles((prev) => [...prev, ...newFiles]);
+    const selectedFiles = Array.from(e.target.files || []);
+    const csvFiles = selectedFiles.filter(
+      (file) =>
+        file.type === "text/csv" || file.name.toLowerCase().endsWith(".csv")
+    );
+
+    if (selectedFiles.length !== csvFiles.length) {
+      alert("Only CSV files are allowed");
+    }
+
+    setFiles((prev) => [...prev, ...csvFiles]);
   };
 
   // Handle file removal
@@ -74,6 +86,14 @@ export default function Home() {
     const filesToProcess = fileToResume ? [fileToResume] : files;
     if (filesToProcess.length === 0) return alert("Please select files");
 
+    // Mark files as actively uploading
+    filesToProcess.forEach((file) => {
+      setActiveUploads((prev) => ({
+        ...prev,
+        [file.name]: true,
+      }));
+    });
+
     try {
       await Promise.all(
         filesToProcess.map(async (file) => {
@@ -86,7 +106,10 @@ export default function Home() {
             setUploading((prev) => ({
               ...prev,
               [file.name]: resumeData?.completedChunks
-                ? (resumeData.completedChunks * 100) / (file.size / chunk_size)
+                ? Math.round(
+                    (resumeData.completedChunks * 100) /
+                      (file.size / chunk_size)
+                  )
                 : 0,
             }));
 
@@ -137,7 +160,7 @@ export default function Home() {
                   [file.name]: Math.round(((i + 1) / urls.length) * 100),
                 }));
               } catch (error) {
-                // Store failed upload information with etags
+                // Store failed upload information
                 setFailedUploads((prev) => ({
                   ...prev,
                   [file.name]: {
@@ -150,6 +173,15 @@ export default function Home() {
                     etags,
                   },
                 }));
+
+                // Remove from active uploads
+                setActiveUploads((prev) => {
+                  const updated = { ...prev };
+                  delete updated[file.name];
+                  return updated;
+                });
+
+                console.error(`Error uploading ${file.name}:`, error);
                 throw error;
               }
             }
@@ -193,6 +225,17 @@ export default function Home() {
   const handleResumeUpload = (file: File) => {
     const resumeData = failedUploads[file.name];
     if (resumeData) {
+      setFailedUploads((prev) => {
+        const updated = { ...prev };
+        delete updated[file.name];
+        return updated;
+      });
+
+      setActiveUploads((prev) => ({
+        ...prev,
+        [file.name]: true,
+      }));
+
       handleUpload(file, {
         key: resumeData.key!,
         upload_id: resumeData.upload_id!,
@@ -248,8 +291,18 @@ export default function Home() {
             onDrop={(e) => {
               e.preventDefault();
               setIsDragging(false);
-              const newFiles = Array.from(e.dataTransfer.files || []);
-              setFiles((prev) => [...prev, ...newFiles]);
+              const droppedFiles = Array.from(e.dataTransfer.files || []);
+              const csvFiles = droppedFiles.filter(
+                (file) =>
+                  file.type === "text/csv" ||
+                  file.name.toLowerCase().endsWith(".csv")
+              );
+
+              if (droppedFiles.length !== csvFiles.length) {
+                alert("Only CSV files are allowed");
+              }
+
+              setFiles((prev) => [...prev, ...csvFiles]);
             }}
           >
             <input
@@ -258,6 +311,7 @@ export default function Home() {
               className={styles.fileInput}
               id="fileInput"
               multiple
+              accept=".csv"
             />
             <label htmlFor="fileInput" className={styles.fileLabel}>
               <svg
@@ -274,7 +328,7 @@ export default function Home() {
                 />
               </svg>
               <span className={styles.dropText}>
-                Drop your files here, or click to select
+                Drop your CSV files here, or click to select
               </span>
             </label>
           </div>
@@ -302,14 +356,15 @@ export default function Home() {
                       <span className={styles.progressPercentage}>
                         {uploading[file.name]}%
                       </span>
-                      {failedUploads[file.name] && (
-                        <button
-                          onClick={() => handleResumeUpload(file)}
-                          className={styles.resumeButton}
-                        >
-                          Resume
-                        </button>
-                      )}
+                      {failedUploads[file.name] &&
+                        !activeUploads[file.name] && (
+                          <button
+                            onClick={() => handleResumeUpload(file)}
+                            className={styles.resumeButton}
+                          >
+                            Resume
+                          </button>
+                        )}
                     </div>
                   )}
 
@@ -335,32 +390,29 @@ export default function Home() {
           </button>
 
           {/* Uploaded Files */}
-          <div className="mt-8">
-            <h2 className="text-xl font-semibold mb-4">Uploaded Files</h2>
-            <div className="grid gap-4">
+          <div className={styles.uploadedFilesSection}>
+            <h2 className={styles.sectionTitle}>Uploaded Files</h2>
+            <div className={styles.uploadedFilesGrid}>
               {uploadedFiles.map((file) => (
-                <div
-                  key={file.id}
-                  className="p-4 border rounded-lg shadow bg-white"
-                >
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <h3 className="font-medium">{file.filename}</h3>
-                      <p className="text-sm text-gray-500">
+                <div key={file.id} className={styles.fileCard}>
+                  <div className={styles.fileCardContent}>
+                    <div className={styles.fileCardInfo}>
+                      <h3 className={styles.fileCardTitle}>{file.filename}</h3>
+                      <p className={styles.fileCardDate}>
                         {new Date(file.created_at).toLocaleString()}
                       </p>
                     </div>
-                    <div className="space-x-2">
+                    <div className={styles.fileCardActions}>
                       <button
                         onClick={() => handlePreview(file.url, file.filename)}
-                        className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+                        className={styles.previewButton}
                       >
                         Preview
                       </button>
                       <a
                         href={file.url}
                         download={file.filename}
-                        className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 inline-block"
+                        className={styles.downloadButton}
                       >
                         Download
                       </a>
