@@ -1,38 +1,19 @@
-### Setup
-```
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-```
-
-
 ### ENV Vars
-Create a .env file in your root directory with the following contents. Update the values to match your config.
+
+Create a .env file in your server directory with the following contents. Update the values to match your config.
 
 ```
 AWS_BUCKET_NAME=YOUR_BUCKET_NAME
 AWS_REGION=YOUR_REGION_NAME
 AWS_ACCESS_KEY_ID=YOUR_KEY
 AWS_SECRET_ACCESS_KEY=YOUR_SECRET
+DATABASE_URL=YOUR_DATABASE_URL
 ```
-
-### Run Server
-```
-uvicorn main:app --reload
-```
-
-
-### AWS Setup
-- name bucket
-- enabled ACLs
-- set object writer
-- disable block public access
-- enable transfer acceleration (optional and not used in example)
-
 
 #### AWS Permissions
 
 Bucket Policy
+
 ```
 {
     "Version": "2012-10-17",
@@ -47,7 +28,6 @@ Bucket Policy
                 "s3:PutObject",
                 "s3:GetObject",
                 "s3:ListBucket",
-                "s3:DeleteObject"
             ],
             "Resource": [
                 "arn:aws:s3:::your_bucket_name/*",
@@ -58,8 +38,8 @@ Bucket Policy
 }
 ```
 
-
 CORS Settings
+
 ```
 [
     {
@@ -81,4 +61,13 @@ CORS Settings
         ]
     }
 ]
+```
+
+#### Run project
+
+```
+ensure you have docker installed and running
+navigate to the root folder
+run `docker compose up --build`
+
 ```
