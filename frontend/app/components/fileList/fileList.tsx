@@ -64,12 +64,14 @@ export default function FileList({
             </div>
           )}
 
-          <button
-            onClick={() => onRemoveFile(file)}
-            className={styles.removeButton}
-          >
-            ×
-          </button>
+          {!activeUploads[file.name] && (
+            <button
+              onClick={() => onRemoveFile(file)}
+              className={styles.removeButton}
+            >
+              ×
+            </button>
+          )}
         </div>
       ))}
     </div>

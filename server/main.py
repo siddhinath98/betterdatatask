@@ -81,13 +81,11 @@ async def complete_upload(
 async def list_files(db: Session = Depends(get_db)):
     files = db.query(FileModel).all()
     
-    print(files, "\nfiles")
     for file in files:
         # Extract key from the full S3 URL
         try:
             url = unquote(file.url)
             key = url.split('.amazonaws.com/')[1]
-            print(key, "\n")
         except IndexError:
             # If URL is in a different format, try alternative parsing
             key = file.url.split(f"{Config.AWS_BUCKET_NAME}/")[-1]
