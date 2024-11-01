@@ -1,10 +1,16 @@
 export interface FileData {
-    id: number;
+    id: string;
     filename: string;
     url: string;
     created_at: string;
 }
 
-export interface UploadProgress {
-    [key: string]: number;
+export interface FailedUpload {
+    key?: string;
+    upload_id?: string;
+    urls: string[];
+    chunk_size: number;
+    completedChunks: number;
+    totalChunks: number;
+    etags?: string[];
 }
