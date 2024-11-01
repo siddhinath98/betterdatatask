@@ -17,6 +17,7 @@ from typing import List
 from app.services.upload import UploadClient
 import uuid
 from config import Config
+import os
 
 app = FastAPI()
 
@@ -28,7 +29,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-client = UploadClient()
+if os.getenv("TESTING"):
+    from tests.mocks import MockUploadClient
+    client = MockUploadClient()
+else:
+    client = UploadClient()
 
 # Create tables
 Base.metadata.create_all(bind=engine)

@@ -1,4 +1,3 @@
-import { useState } from "react";
 import styles from "./fileList.module.css";
 
 interface FileListProps {
@@ -29,7 +28,6 @@ export default function FileList({
   activeUploads,
   onRemoveFile,
   onResumeUpload,
-  onUploadComplete,
 }: FileListProps) {
   return (
     <div className={styles.fileList}>

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FileData, FailedUpload } from '../types/files';
+import { FailedUpload } from '../types/files';
 
 export function useFileUpload() {
     const [files, setFiles] = useState<File[]>([]);
