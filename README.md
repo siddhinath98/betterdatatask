@@ -1,4 +1,4 @@
-### ENV Vars
+#### ENV Vars
 
 Create a .env file in your server directory with the following contents. Update the values to match your config.
 
@@ -65,9 +65,10 @@ CORS Settings
 
 #### Run project
 
-```
 ensure you have docker installed and running
-navigate to the root folder
-run `docker compose up --build`
+navigate to the root folder and run
+
+```
+docker-compose up --build
 
 ```
