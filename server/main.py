@@ -29,11 +29,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-if os.getenv("TESTING"):
-    from tests.mocks import MockUploadClient
-    client = MockUploadClient()
-else:
-    client = UploadClient()
+client = UploadClient()
 
 # Create tables
 Base.metadata.create_all(bind=engine)
